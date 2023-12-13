@@ -6,13 +6,13 @@ import (
 )
 
 type BasketCreate struct {
-	Data  string `json:"data,omitempty"   validate:"required,alphaunicode"`
-	State string `json:"state,omitempty" validate:"required,dive,eq=COMPLETED|eq=PENDING"`
+	Data  string `json:"data,omitempty"   validate:"required,alphanumunicode"`
+	State string `json:"state,omitempty" validate:"required,eq=COMPLETED|eq=PENDING"`
 }
 
 type BasketUpdate struct {
-	Data  string `json:"data,omitempty"   validate:"required,alphaunicode"`
-	State string `json:"state,omitempty" validate:"required,dive,eq=COMPLETED|eq=PENDING"`
+	Data  string `json:"data,omitempty"   validate:"omitempty,alphanumunicode"`
+	State string `json:"state,omitempty" validate:"omitempty,eq=COMPLETED|eq=PENDING"`
 }
 
 func (bc BasketCreate) Validate() error {
