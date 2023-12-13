@@ -7,11 +7,12 @@ import (
 
 type BasketCreate struct {
 	Data  string `json:"data,omitempty"   validate:"required,alphaunicode"`
-	State string `json:"state,omitempty" validate:"required,alphaunicode"`
+	State string `json:"state,omitempty" validate:"required,dive,eq=COMPLETED|eq=PENDING"`
 }
 
 type BasketUpdate struct {
-	State string `json:"state,omitempty" validate:"required,alphaunicode"`
+	Data  string `json:"data,omitempty"   validate:"required,alphaunicode"`
+	State string `json:"state,omitempty" validate:"required,dive,eq=COMPLETED|eq=PENDING"`
 }
 
 func (bc BasketCreate) Validate() error {
