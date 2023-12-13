@@ -4,14 +4,11 @@ import (
 	"context"
 	"github.com/Hamid-Rezaei/goBasket/internal/domain/model"
 	"gorm.io/gorm"
-	"time"
 )
 
 type BasketDTO struct {
+	gorm.Model
 	model.Basket
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 type Repository struct {
@@ -24,21 +21,22 @@ func New(db *gorm.DB) *Repository {
 	}
 }
 
-func (r *Repository) Create(ctx context.Context, model model.Basket) error {
+func (r *Repository) Create(ctx context.Context, model model.Basket) (uint, error) {
 	tx := r.db.WithContext(ctx).Begin()
 
-	if err := tx.Create(&BasketDTO{Basket: model}).Error; err != nil {
+	basketDTO := BasketDTO{Basket: model}
+	if err := tx.Create(&basketDTO).Error; err != nil {
 		tx.Rollback()
-		return err
+		return 0, err
 	}
 
-	return tx.Commit().Error
+	return basketDTO.ID, tx.Commit().Error
 }
 
-func (r *Repository) Update(ctx context.Context, model model.Basket) error {
+func (r *Repository) Update(ctx context.Context, model model.Basket, id int) error {
 	tx := r.db.WithContext(ctx).Begin()
 
-	if err := tx.Model(&BasketDTO{}).Where("id = ?", model.ID).Updates(&BasketDTO{Basket: model}).Error; err != nil {
+	if err := tx.Model(&BasketDTO{}).Where("id = ?", id).Updates(&BasketDTO{Basket: model}).Error; err != nil {
 		tx.Rollback()
 		return err
 	}

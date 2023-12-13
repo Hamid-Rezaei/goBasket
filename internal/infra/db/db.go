@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"github.com/Hamid-Rezaei/goBasket/internal/infra/repository"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -9,6 +10,18 @@ import (
 	"os"
 	"time"
 )
+
+func CreateURI() string {
+	driver := os.Getenv("DB_DRIVER")
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	username := os.Getenv("DB_USERNAME")
+	password := os.Getenv("DB_PASSWORD")
+	db := os.Getenv("DB")
+
+	DSN := fmt.Sprintf("%s://%s:%s@%s:%s/%s", driver, username, password, host, port, db)
+	return DSN
+}
 
 func New() (*gorm.DB, error) {
 	dbLogger := logger.New(
@@ -31,14 +44,10 @@ func New() (*gorm.DB, error) {
 	return db, nil
 }
 
-func CreateURI() string {
-	driver := os.Getenv("DB_DRIVER")
-	host := os.Getenv("DB_HOST")
-	port := os.Getenv("DB_PORT")
-	username := os.Getenv("DB_USERNAME")
-	password := os.Getenv("DB_PASSWORD")
-	db := os.Getenv("DB")
-
-	DSN := fmt.Sprintf("%s://%s:%s@%s:%s/%s", driver, username, password, host, port, db)
-	return DSN
+func AutoMigrate(db *gorm.DB) {
+	if err := db.AutoMigrate(
+		new(repository.BasketDTO),
+	); err != nil {
+		log.Fatalf("failed to run migrations %v", err)
+	}
 }
