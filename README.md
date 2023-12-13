@@ -1,1 +1,3 @@
-# goCart
+# goBasket
+
+### The midterm exam of web programming
