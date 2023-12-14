@@ -46,6 +46,7 @@ func New() (*gorm.DB, error) {
 
 func AutoMigrate(db *gorm.DB) {
 	if err := db.AutoMigrate(
+		new(repository.UserDTO),
 		new(repository.BasketDTO),
 	); err != nil {
 		log.Fatalf("failed to run migrations %v", err)

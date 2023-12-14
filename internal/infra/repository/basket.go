@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"github.com/Hamid-Rezaei/goBasket/internal/domain/model"
 	"gorm.io/gorm"
 )
@@ -11,17 +12,17 @@ type BasketDTO struct {
 	model.Basket
 }
 
-type Repository struct {
+type BasketRepository struct {
 	db *gorm.DB
 }
 
-func New(db *gorm.DB) *Repository {
-	return &Repository{
+func NewBasketRepo(db *gorm.DB) *BasketRepository {
+	return &BasketRepository{
 		db: db,
 	}
 }
 
-func (r *Repository) Create(ctx context.Context, model model.Basket) (uint, error) {
+func (r *BasketRepository) Create(ctx context.Context, model model.Basket) (uint, error) {
 	tx := r.db.WithContext(ctx).Begin()
 
 	basketDTO := BasketDTO{Basket: model}
@@ -33,7 +34,7 @@ func (r *Repository) Create(ctx context.Context, model model.Basket) (uint, erro
 	return basketDTO.ID, tx.Commit().Error
 }
 
-func (r *Repository) Update(ctx context.Context, model model.Basket, id int) error {
+func (r *BasketRepository) Update(ctx context.Context, model model.Basket, id int) error {
 	tx := r.db.WithContext(ctx).Begin()
 
 	if err := tx.Model(&BasketDTO{}).Where("id = ?", id).Updates(&BasketDTO{Basket: model}).Error; err != nil {
@@ -44,7 +45,7 @@ func (r *Repository) Update(ctx context.Context, model model.Basket, id int) err
 	return tx.Commit().Error
 }
 
-func (r *Repository) Delete(ctx context.Context, id int) error {
+func (r *BasketRepository) Delete(ctx context.Context, id int) error {
 	tx := r.db.WithContext(ctx).Begin()
 
 	if err := tx.Delete(&BasketDTO{}, id).Error; err != nil {
@@ -55,10 +56,14 @@ func (r *Repository) Delete(ctx context.Context, id int) error {
 	return tx.Commit().Error
 }
 
-func (r *Repository) GetBaskets(_ context.Context) ([]model.Basket, error) {
+func (r *BasketRepository) GetUserBaskets(_ context.Context, userID uint) ([]model.Basket, error) {
 	var basketDTOs []BasketDTO
 
-	if err := r.db.Find(&basketDTOs).Error; err != nil {
+	if err := r.db.Model(&BasketDTO{}).Where(
+		"user_id = ?", userID).Find(&basketDTOs).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -70,10 +75,14 @@ func (r *Repository) GetBaskets(_ context.Context) ([]model.Basket, error) {
 	return baskets, nil
 }
 
-func (r *Repository) GetBasketByID(_ context.Context, id int) (*model.Basket, error) {
+func (r *BasketRepository) GetUserBasketByID(_ context.Context, userID uint, basketID uint) (*model.Basket, error) {
 	var basketDTO BasketDTO
 
-	if err := r.db.First(&basketDTO, id).Error; err != nil {
+	if err := r.db.Model(&BasketDTO{}).Where(
+		"user_id = ? AND id = ?", userID, basketID).First(&basketDTO).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 

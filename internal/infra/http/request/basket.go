@@ -25,10 +25,10 @@ func (bc BasketCreate) Validate() error {
 	return nil
 }
 
-func (bc BasketUpdate) Validate() error {
+func (bu BasketUpdate) Validate() error {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 
-	if err := validate.Struct(bc); err != nil {
+	if err := validate.Struct(bu); err != nil {
 		return fmt.Errorf("update request validation failed %w", err)
 	}
 
