@@ -23,11 +23,13 @@ func main() {
 
 	db.AutoMigrate(dbConnection)
 
-	basketRepo := repository.New(dbConnection)
+	v1 := app.Group("/api")
 
-	h := handler.NewBasket(basketRepo)
-	h.Register(app.Group("/basket"))
+	br := repository.NewBasketRepo(dbConnection)
+	ur := repository.NewUserRepo(dbConnection)
 
+	h := handler.NewHandler(ur, br)
+	h.Register(v1)
 	if err := app.Start("0.0.0.0:1373"); err != nil {
 		log.Fatalf("server failed to start %v", err)
 	}

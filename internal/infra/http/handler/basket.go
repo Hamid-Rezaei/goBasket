@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/Hamid-Rezaei/goBasket/internal/domain/model"
 	"github.com/Hamid-Rezaei/goBasket/internal/infra/http/request"
-	"github.com/Hamid-Rezaei/goBasket/internal/infra/repository"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 	"log"
@@ -12,17 +11,7 @@ import (
 	"strconv"
 )
 
-type Basket struct {
-	repo repository.BasketRepo
-}
-
-func NewBasket(repo repository.BasketRepo) *Basket {
-	return &Basket{
-		repo: repo,
-	}
-}
-
-func (b *Basket) Create(c echo.Context) error {
+func (h *Handler) CreateBasket(c echo.Context) error {
 	var req request.BasketCreate
 
 	// Bind Request
@@ -36,7 +25,7 @@ func (b *Basket) Create(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	id, err := b.repo.Create(c.Request().Context(), model.Basket{
+	id, err := h.basketRepo.Create(c.Request().Context(), model.Basket{
 		Data:  req.Data,
 		State: req.State,
 	})
@@ -49,7 +38,7 @@ func (b *Basket) Create(c echo.Context) error {
 	return c.JSON(http.StatusCreated, id)
 }
 
-func (b *Basket) Update(c echo.Context) error {
+func (h *Handler) UpdateBasket(c echo.Context) error {
 
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -70,7 +59,7 @@ func (b *Basket) Update(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	basket, err := b.repo.GetBasketByID(c.Request().Context(), int(id))
+	basket, err := h.basketRepo.GetBasketByID(c.Request().Context(), int(id))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.JSON(http.StatusNoContent, "Basket Not Found!")
@@ -80,7 +69,7 @@ func (b *Basket) Update(c echo.Context) error {
 	}
 
 	if basket.State == "COMPLETED" {
-		return c.JSON(http.StatusNotAcceptable, "Cannot Update Completed Basket!")
+		return c.JSON(http.StatusNotAcceptable, "Cannot UpdateBasket Completed Basket!")
 	}
 
 	basketModel := model.Basket{
@@ -88,7 +77,7 @@ func (b *Basket) Update(c echo.Context) error {
 		State: req.State,
 	}
 
-	if err := b.repo.Update(c.Request().Context(), basketModel, int(id)); err != nil {
+	if err := h.basketRepo.Update(c.Request().Context(), basketModel, int(id)); err != nil {
 		log.Printf("%v\n", err)
 		return echo.ErrInternalServerError
 	}
@@ -97,9 +86,9 @@ func (b *Basket) Update(c echo.Context) error {
 
 }
 
-func (b *Basket) GetBaskets(c echo.Context) error {
+func (h *Handler) GetBaskets(c echo.Context) error {
 
-	baskets, err := b.repo.GetBaskets(c.Request().Context())
+	baskets, err := h.basketRepo.GetBaskets(c.Request().Context())
 
 	if err != nil {
 		log.Printf("%v\n", err)
@@ -110,7 +99,7 @@ func (b *Basket) GetBaskets(c echo.Context) error {
 
 }
 
-func (b *Basket) GetByID(c echo.Context) error {
+func (h *Handler) GetBasketByID(c echo.Context) error {
 
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -118,7 +107,7 @@ func (b *Basket) GetByID(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	basket, err := b.repo.GetBasketByID(c.Request().Context(), int(id))
+	basket, err := h.basketRepo.GetBasketByID(c.Request().Context(), int(id))
 
 	if err != nil {
 		log.Printf("%v\n", err)
@@ -133,7 +122,7 @@ func (b *Basket) GetByID(c echo.Context) error {
 
 }
 
-func (b *Basket) Delete(c echo.Context) error {
+func (h *Handler) DeleteBasket(c echo.Context) error {
 
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -141,19 +130,11 @@ func (b *Basket) Delete(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	if err := b.repo.Delete(c.Request().Context(), int(id)); err != nil {
+	if err := h.basketRepo.Delete(c.Request().Context(), int(id)); err != nil {
 		log.Printf("%v\n", err)
 		return echo.ErrInternalServerError
 	}
 
 	return c.JSON(http.StatusOK, "Basket Was Deleted Successfully.")
 
-}
-
-func (b *Basket) Register(g *echo.Group) {
-	g.GET("/", b.GetBaskets)
-	g.POST("/", b.Create)
-	g.PATCH("/:id", b.Update)
-	g.GET("/:id", b.GetByID)
-	g.DELETE("/:id", b.Delete)
 }
