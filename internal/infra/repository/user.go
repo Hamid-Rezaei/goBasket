@@ -10,6 +10,7 @@ import (
 type UserDTO struct {
 	gorm.Model
 	model.User
+	Baskets []BasketDTO `gorm:"foreignkey:UserID" json:"baskets,omitempty"`
 }
 
 type UserRepository struct {
