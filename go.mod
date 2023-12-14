@@ -9,7 +9,6 @@ require (
 	github.com/labstack/echo/v4 v4.11.3
 	github.com/labstack/gommon v0.4.0
 	golang.org/x/crypto v0.14.0
-	gopkg.in/go-playground/validator.v9 v9.31.0
 	gorm.io/driver/postgres v1.5.4
 	gorm.io/gorm v1.25.5
 )
@@ -33,5 +32,4 @@ require (
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
-	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )
