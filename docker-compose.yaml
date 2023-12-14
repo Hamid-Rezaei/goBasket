@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.7'
 
 x-environment: &common-env
   DB_DRIVER: ${DB_DRIVER}
@@ -14,7 +14,6 @@ services:
     container_name: app
     environment:
       <<: *common-env
-
     build: .
     ports:
       - "1373:1373"

@@ -37,8 +37,5 @@ COPY --from=builder /app/.env .
 # Expose port 1373 to the outside world
 EXPOSE 1373
 
-# Copy the .env file
-COPY .env .
-
 # Command to run the executable
 CMD ["./main"]
