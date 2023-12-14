@@ -44,3 +44,15 @@ func (ur *UserRepository) GetByPassword(_ context.Context, password string) (*Us
 	}
 	return &userDTO, nil
 }
+
+func (ur *UserRepository) GetUserByID(_ context.Context, id uint) (*UserDTO, error) {
+	var userDTO UserDTO
+
+	if err := ur.db.First(&userDTO, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &userDTO, nil
+}

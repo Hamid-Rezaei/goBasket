@@ -71,3 +71,22 @@ func (h *Handler) Login(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, response.NewUserResponse(user))
 }
+
+func (h *Handler) CurrentUser(c echo.Context) error {
+	user, err := h.userRepo.GetUserByID(c.Request().Context(), userIDFromToken(c))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+	if user == nil {
+		return c.JSON(http.StatusNotFound, "User Does not exist!")
+	}
+	return c.JSON(http.StatusOK, response.NewUserResponse(user))
+}
+
+func userIDFromToken(c echo.Context) uint {
+	id, ok := c.Get("user").(uint)
+	if !ok {
+		return 0
+	}
+	return id
+}

@@ -11,8 +11,8 @@ func (h *Handler) Register(v1 *echo.Group) {
 	guestUsers.POST("", h.SignUp)
 	guestUsers.POST("/login", h.Login)
 
-	//user := v1.Group("/user", middleware.JWT(utils.JWTSecret))
-	//user.GET("", h.CurrentUser)
+	user := v1.Group("/user", middleware.JWT(utils.GetSigningKey()))
+	user.GET("", h.CurrentUser)
 
 	baskets := v1.Group("/basket", middleware.JWTWithConfig(
 		middleware.JWTConfig{

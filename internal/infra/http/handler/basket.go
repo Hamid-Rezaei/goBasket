@@ -25,10 +25,12 @@ func (h *Handler) CreateBasket(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	id, err := h.basketRepo.Create(c.Request().Context(), model.Basket{
-		Data:  req.Data,
-		State: req.State,
-	})
+	var basket model.Basket
+	basket.Data = req.Data
+	basket.State = req.State
+	basket.UserID = userIDFromToken(c)
+
+	id, err := h.basketRepo.Create(c.Request().Context(), basket)
 
 	if err != nil {
 		log.Printf("%v\n", err)
@@ -59,7 +61,8 @@ func (h *Handler) UpdateBasket(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	basket, err := h.basketRepo.GetBasketByID(c.Request().Context(), int(id))
+	userID := userIDFromToken(c)
+	basket, err := h.basketRepo.GetUserBasketByID(c.Request().Context(), userID, uint(id))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.JSON(http.StatusNoContent, "Basket Not Found!")
@@ -87,8 +90,8 @@ func (h *Handler) UpdateBasket(c echo.Context) error {
 }
 
 func (h *Handler) GetBaskets(c echo.Context) error {
-
-	baskets, err := h.basketRepo.GetBaskets(c.Request().Context())
+	userID := userIDFromToken(c)
+	baskets, err := h.basketRepo.GetUserBaskets(c.Request().Context(), userID)
 
 	if err != nil {
 		log.Printf("%v\n", err)
@@ -107,7 +110,8 @@ func (h *Handler) GetBasketByID(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	basket, err := h.basketRepo.GetBasketByID(c.Request().Context(), int(id))
+	userID := userIDFromToken(c)
+	basket, err := h.basketRepo.GetUserBasketByID(c.Request().Context(), userID, uint(id))
 
 	if err != nil {
 		log.Printf("%v\n", err)
@@ -128,6 +132,18 @@ func (h *Handler) DeleteBasket(c echo.Context) error {
 	if err != nil {
 		log.Printf("%v\n", err)
 		return echo.ErrBadRequest
+	}
+
+	userID := userIDFromToken(c)
+	basket, err := h.basketRepo.GetUserBasketByID(c.Request().Context(), userID, uint(id))
+
+	if basket == nil {
+		log.Printf("%s", "User don't has permission!")
+		return c.JSON(http.StatusForbidden, "User don't has permission!")
+	}
+	if err != nil {
+		log.Printf("%v\n", err)
+		return echo.ErrInternalServerError
 	}
 
 	if err := h.basketRepo.Delete(c.Request().Context(), int(id)); err != nil {
