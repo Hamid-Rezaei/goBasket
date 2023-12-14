@@ -35,9 +35,9 @@ func (ur *UserRepository) Create(ctx context.Context, model model.User) (uint, e
 	return userDTO.ID, tx.Commit().Error
 }
 
-func (ur *UserRepository) GetByPassword(_ context.Context, password string) (*UserDTO, error) {
+func (ur *UserRepository) GetByEmail(_ context.Context, email string) (*UserDTO, error) {
 	var userDTO UserDTO
-	if err := ur.db.Where(&model.User{Password: password}).First(&userDTO).Error; err != nil {
+	if err := ur.db.Where(&model.User{Email: email}).First(&userDTO).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}

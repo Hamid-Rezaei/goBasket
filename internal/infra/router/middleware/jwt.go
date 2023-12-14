@@ -29,7 +29,7 @@ func JWT(key interface{}) echo.MiddlewareFunc {
 }
 
 func JWTWithConfig(config JWTConfig) echo.MiddlewareFunc {
-	extractor := jwtFromHeader("Authorization", "Token")
+	extractor := jwtFromHeader("Authorization", "Bearer")
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			auth, err := extractor(c)

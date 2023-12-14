@@ -58,7 +58,7 @@ func (h *Handler) Login(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	user, err := h.userRepo.GetByPassword(c.Request().Context(), req.Password)
+	user, err := h.userRepo.GetByEmail(c.Request().Context(), req.Email)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
