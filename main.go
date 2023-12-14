@@ -6,6 +6,7 @@ import (
 	"github.com/Hamid-Rezaei/goBasket/internal/infra/repository"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"log"
 )
 
@@ -15,6 +16,10 @@ func main() {
 	}
 
 	app := echo.New()
+
+	// Middleware
+	app.Use(middleware.Logger())
+	app.Use(middleware.Recover())
 
 	dbConnection, err := db.New()
 	if err != nil {

@@ -3,7 +3,8 @@ package handler
 import (
 	"github.com/Hamid-Rezaei/goBasket/internal/domain/model"
 	"github.com/Hamid-Rezaei/goBasket/internal/infra/http/request"
-	_ "github.com/Hamid-Rezaei/goBasket/internal/infra/http/request"
+	"github.com/Hamid-Rezaei/goBasket/internal/infra/http/response"
+	_ "github.com/Hamid-Rezaei/goBasket/internal/infra/http/response"
 	"github.com/labstack/echo/v4"
 	"log"
 	"net/http"
@@ -68,5 +69,5 @@ func (h *Handler) Login(c echo.Context) error {
 		return c.JSON(http.StatusForbidden, "Access Forbidden!")
 	}
 
-	return c.JSON(http.StatusOK, newUserResponse(user))
+	return c.JSON(http.StatusOK, response.NewUserResponse(user))
 }

@@ -34,13 +34,13 @@ func (ur *UserRepository) Create(ctx context.Context, model model.User) (uint, e
 	return userDTO.ID, tx.Commit().Error
 }
 
-func (ur *UserRepository) GetByPassword(_ context.Context, password string) (*model.User, error) {
-	var user model.User
-	if err := ur.db.Where(&model.User{Password: password}).First(&user).Error; err != nil {
+func (ur *UserRepository) GetByPassword(_ context.Context, password string) (*UserDTO, error) {
+	var userDTO UserDTO
+	if err := ur.db.Where(&model.User{Password: password}).First(&userDTO).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err
 	}
-	return &user, nil
+	return &userDTO, nil
 }

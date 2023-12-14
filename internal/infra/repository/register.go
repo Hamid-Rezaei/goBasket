@@ -15,5 +15,5 @@ type BasketRepo interface {
 
 type UserRepo interface {
 	Create(ctx context.Context, model model.User) (uint, error)
-	GetByPassword(_ context.Context, password string) (*model.User, error)
+	GetByPassword(_ context.Context, password string) (*UserDTO, error)
 }
