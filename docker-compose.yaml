@@ -18,8 +18,8 @@ services:
     ports:
       - "1373:1373"
     restart: always
-#    depends_on:
-#      - postgres
+    depends_on:
+      - postgres
     networks:
       - dockernet
 

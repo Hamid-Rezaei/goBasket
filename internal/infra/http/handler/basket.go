@@ -138,8 +138,8 @@ func (h *Handler) DeleteBasket(c echo.Context) error {
 	basket, err := h.basketRepo.GetUserBasketByID(c.Request().Context(), userID, uint(id))
 
 	if basket == nil {
-		log.Printf("%s", "User don't has permission!")
-		return c.JSON(http.StatusForbidden, "User don't has permission!")
+		log.Printf("%s", "User does not have permission!")
+		return c.JSON(http.StatusForbidden, "User does not have permission or not found!")
 	}
 	if err != nil {
 		log.Printf("%v\n", err)
