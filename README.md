@@ -5,9 +5,9 @@
 - ### Creating a miniature shopping cart or basket using the Echo framework, incorporating user authorization through JWT.
 
 ## Requirements
-- Python 3
+- Golang
 - PostgreSQL
-- docker
+- Docker
 
 
 ## Installation
