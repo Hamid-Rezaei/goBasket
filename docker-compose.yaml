@@ -18,8 +18,8 @@ services:
     ports:
       - "1373:1373"
     restart: always
-    depends_on:
-      - postgres
+#    depends_on:
+#      - postgres
     networks:
       - dockernet
 
@@ -30,7 +30,7 @@ services:
       - general_postgres_data:/var/lib/postgresql/data/
     container_name: postgres
     ports:
-      - "54392:5432"
+      - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
