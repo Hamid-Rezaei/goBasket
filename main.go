@@ -4,9 +4,8 @@ import (
 	"github.com/Hamid-Rezaei/goBasket/internal/infra/db"
 	"github.com/Hamid-Rezaei/goBasket/internal/infra/http/handler"
 	"github.com/Hamid-Rezaei/goBasket/internal/infra/repository"
+	"github.com/Hamid-Rezaei/goBasket/internal/infra/router"
 	"github.com/joho/godotenv"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"log"
 )
 
@@ -15,11 +14,7 @@ func main() {
 		log.Fatal("Cannot find env file")
 	}
 
-	app := echo.New()
-
-	// Middleware
-	app.Use(middleware.Logger())
-	app.Use(middleware.Recover())
+	r := router.New()
 
 	dbConnection, err := db.New()
 	if err != nil {
@@ -28,14 +23,14 @@ func main() {
 
 	db.AutoMigrate(dbConnection)
 
-	v1 := app.Group("/api")
+	v1 := r.Group("/api")
 
 	br := repository.NewBasketRepo(dbConnection)
 	ur := repository.NewUserRepo(dbConnection)
 
 	h := handler.NewHandler(ur, br)
 	h.Register(v1)
-	if err := app.Start("0.0.0.0:1373"); err != nil {
+	if err := r.Start("0.0.0.0:1373"); err != nil {
 		log.Fatalf("server failed to start %v", err)
 	}
 }
