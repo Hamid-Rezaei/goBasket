@@ -1,19 +1,19 @@
 version: '3.7'
 
-x-environment: &common-env
+x-environment: &app-env
   DB_DRIVER: ${DB_DRIVER}
-  DB_HOST: ${DB_HOST}
+  DB_HOST: ${POSTGRES_HOST}
   DB_PORT: ${DB_PORT}
   DB_USERNAME: ${DB_USERNAME}
-  DB: ${DB}
   DB_PASSWORD: ${DB_PASSWORD}
+  DB: ${DB}
   JWT_SECRET: ${JWT_SECRET}
 
 services:
   app:
     container_name: app
     environment:
-      <<: *common-env
+      <<: *app-env
     build: .
     ports:
       - "1373:1373"
@@ -25,15 +25,15 @@ services:
 
   postgres:
     image: postgres:12-alpine
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     restart: always
     volumes:
       - general_postgres_data:/var/lib/postgresql/data/
-    container_name: postgres
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
     networks:
       - dockernet
 
